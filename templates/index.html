@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Image Similarity Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+    --primary: #2563eb;
+    --secondary: #0f172a;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ---------- HEADER ---------- */
+.header {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.header p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #c7d2fe;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+.container {
+    max-width: 1200px;
+    margin: -30px auto 40px;
+    padding: 0 20px;
+}
+
+/* ---------- CARD ---------- */
+.card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* ---------- UPLOAD ---------- */
+.upload-form {
+    text-align: center;
+}
+
+.upload-form input[type="file"] {
+    margin-bottom: 15px;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+/* ---------- QUERY IMAGE ---------- */
+.query {
+    text-align: center;
+}
+
+.query img {
+    width: 280px;
+    border-radius: 16px;
+    border: 4px solid #e5e7eb;
+}
+
+/* ---------- GRID ---------- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+}
+
+/* ---------- IMAGE CARD ---------- */
+.image-card {
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.image-card:hover {
+    transform: translateY(-6px);
+}
+
+.image-card img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* ---------- CONFIDENCE ---------- */
+.bar {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 10px;
+    background: linear-gradient(90deg, #2563eb, #22c55e);
+}
+
+.score {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.high { background: #dcfce7; color: #166534; }
+.medium { background: #fef9c3; color: #854d0e; }
+.low { background: #fee2e2; color: #991b1b; }
+
+/* ---------- FOOTER ---------- */
+.footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 30px;
+}
+.result-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-6px);
+}
+
+.result-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.similarity-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.similarity-fill {
+    height: 8px;
+    background: linear-gradient(90deg, #2563eb, #22c55e);
+}
+
+.result-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.score-text {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.high { background: #dcfce7; color: #166534; }
+.medium { background: #fef9c3; color: #854d0e; }
+.low { background: #fee2e2; color: #991b1b; }
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>AI Image Similarity Search</h1>
+    <p>Deep learning based visual similarity using ResNet50 embeddings</p>
+</div>
+
+<div class="container">
+
+<!-- UPLOAD -->
+<div class="card upload-form">
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required><br>
+
+        <label>
+            Top-K Results:
+            <input type="range" name="top_k" min="1" max="10" value="{{ top_k }}">
+        </label>
+        <br><br>
+
+        <button type="submit">Search Similar Images</button>
+    </form>
+</div>
+
+<!-- QUERY IMAGE -->
+{% if query_image %}
+<div class="card query">
+    <h3>Query Image</h3>
+    <img src="/uploads/{{ query_image }}">
+</div>
+{% endif %}
+
+<!-- RESULTS -->
+{% if results %}
+{% if results %}
+<div class="card">
+    <h3 style="margin-bottom:20px;">Similar Images</h3>
+
+    <div class="grid">
+        {% for img, score in results %}
+        <div class="result-card">
+
+            <img src="/static/{{ img }}" onclick="showModal(this.src)">
+
+            <div class="similarity-bar">
+                <div class="similarity-fill" style="width: {{ score*100 }}%"></div>
+            </div>
+
+            <div class="result-footer">
+                <span class="score-text">
+                    Similarity: {{ "%.2f"|format(score) }}
+                </span>
+
+                {% if score > 0.7 %}
+                    <span class="badge high">High Match</span>
+                {% elif score > 0.4 %}
+                    <span class="badge medium">Medium Match</span>
+                {% else %}
+                    <span class="badge low">Low Match</span>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<div class="footer">
+    AI Image Similarity Search • Built with TensorFlow & Cloudflare
+</div>
+
+</div>
+
+</body>
+</html>
