@@ -96,11 +96,9 @@ Each image is embedded and stored in `image_features.pkl`.
 ---
 
 ## ▶️ How to Run Locally
-pip install -r requirements.txt
-python create_features.py
-python app.py
-http://127.0.0.1:5000
+-pip install -r requirements.txt
+-python create_features.py
+-python app.py
+-http://127.0.0.1:5000
 
----
 
-## 🏗️ System Architecture
