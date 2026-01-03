@@ -1,2 +1,26 @@
-# Deep-Learning-Project-AI-Powered-Image-Similarity-Search-and-Recommendation-System
-In a digital world overflowing with images, traditional text-based search often fails to capture visual nuances. Users struggle to find similar content or get relevant recommendations because keywords can't fully express visual semantics.
+# AI-Powered Image Similarity Search and Recommendation System
+
+## 📌 Project Description
+This project implements an AI-based image similarity search system using deep learning.
+It extracts visual features from images using a pretrained ResNet50 model and recommends
+visually similar images using cosine similarity.
+
+## 🚀 Features
+- Deep learning based feature extraction
+- Real-time image similarity search
+- Image grid visualization
+- Flask web application
+- Cloud deployable (GitHub + Cloudflare)
+
+## 🧠 Technology Stack
+- Python
+- TensorFlow / Keras
+- ResNet50
+- Flask
+- HTML/CSS
+- Cloudflare Tunnel
+
+## ▶️ How to Run
+```bash
+pip install -r requirements.txt
+python app.py
